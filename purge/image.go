@@ -170,6 +170,10 @@ func RemoveImages (filters ...Filter) (err error) {
 	}
 	for _, img := range images {
 		if iv.Satisfied(img) {
+			if dryRun {
+				fmt.Println("[DryRun]Removing image:", img.ID, img.RepoTags)
+				continue
+			}
 			er := cli.RemoveImage(img.ID)
 			if er != nil {
 				fmt.Printf("can not remove image %s, reason: %s\n", img.ID, er)

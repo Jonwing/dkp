@@ -173,11 +173,15 @@ func RemoveContainers(filters ...Filter) (err error) {
 	}
 	for _, ctn := range containers {
 		if validator.Satisfied(ctn) {
+			if dryRun {
+				fmt.Println("[DryRun]Removing container ", ctn.ID)
+				continue
+			}
+			fmt.Println("Removing container ", ctn.ID)
 			e := cli.RemoveContainer(docker.RemoveContainerOptions{ID:ctn.ID})
 			if e != nil {
 				fmt.Printf("Can not remove container: %s, reason: %s", ctn.ID, e)
 			}
-			fmt.Println("removing container ", ctn.ID)
 		}
 	}
 	return

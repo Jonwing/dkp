@@ -15,6 +15,9 @@ var (
 	// filter stores filter strings from CMD
 	filter []string
 
+	// dryRun with it set to true, only print operations without actually applying them
+	dryRun bool
+
 	// durationPtn is responsible for matching duration string from CMD
 	durationPtn = regexp.MustCompile(`((?P<years>\d+?)y)?((?P<months>\d+?)m)?((?P<days>\d+?)d)?`)
 
@@ -33,7 +36,7 @@ var rootCmd = &cobra.Command{
 	Use: "dkp",
 	Short: "purge resources",
 	Long: "purge allows you to clean images, containers, swarm services with filters",
-	//Run: Purge,
+	// Run: Purge,
 }
 
 
@@ -56,12 +59,6 @@ func Execute() {
 func Version(cmd *cobra.Command, args []string) {
 
 }
-
-//func Purge(cmd *cobra.Command, args []string) {
-//	fmt.Println("Args: ", strings.Join(args, "\n"))
-//	fmt.Println("filter: ", filter)
-//	RemoveContainers()
-//}
 
 // Ago stores duration from now
 type Ago struct {
@@ -123,7 +120,6 @@ func parseSize(s string) (size int64, err error) {
 
 
 func init() {
-	//rootCmd.PersistentFlags().StringVar(&ago, "ago", "", "select created time before ago")
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(cmdImg)
 	rootCmd.AddCommand(cmdCtn)
@@ -136,4 +132,10 @@ func init() {
 		"d",
 		"",
 		"docker uri. if not provided, use the default")
+	rootCmd.PersistentFlags().BoolVarP(
+		&dryRun,
+		"dry-run",
+		"p",
+		false,
+		"Only prints actions but not actually apply them")
 }
