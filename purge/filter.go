@@ -1,10 +1,5 @@
 package purge
 
-import (
-	"fmt"
-	"github.com/kataras/go-errors"
-)
-
 type Op string
 
 type InfoProvider interface {
@@ -129,8 +124,7 @@ type Filter struct {
 func parseFilter(s string) (f Filter, err error) {
 	m := filterPtn.FindStringSubmatch(s)
 	if m == nil {
-		err = errors.New(fmt.Sprintf("Unregonized filter: %s", s))
-		return
+		return f, Mismatched
 	}
 
 	f = Filter{Source: s}

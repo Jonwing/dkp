@@ -201,7 +201,3 @@ func ByteSize(amount int64, unit string) (int64, error) {
 	return amount * base, nil
 }
 
-
-func init() {
-
-}

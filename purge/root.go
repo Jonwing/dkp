@@ -1,12 +1,17 @@
 package purge
 
 import (
+	"errors"
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"
 	"regexp"
 	"strconv"
 	"time"
+)
+
+var (
+	Mismatched = errors.New("pattern mismatched")
 )
 
 var (
@@ -40,14 +45,6 @@ var rootCmd = &cobra.Command{
 }
 
 
-var versionCmd = &cobra.Command{
-	Use: "version",
-	Short: "Print the version number",
-	Long: "Print the version number",
-	Run: Version,
-}
-
-
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
@@ -76,6 +73,9 @@ func (a *Ago) Timestamp() int64 {
 func parseDuration(d string) (a *Ago, err error) {
 	a = new(Ago)
 	m := durationPtn.FindStringSubmatch(d)
+	if m != nil {
+		return a, Mismatched
+	}
 	for i, name := range durationPtn.SubexpNames() {
 		if i != 0 && name != "" && m[i] != "" {
 			switch name {
@@ -102,6 +102,9 @@ func parseSize(s string) (size int64, err error) {
 	var amount int64
 	var unit string
 	m := sizePtn.FindStringSubmatch(s)
+	if m == nil {
+		return 0, Mismatched
+	}
 	for i, name := range sizePtn.SubexpNames() {
 		if i != 0 && name != "" && m[i] != "" {
 			switch name {
@@ -120,7 +123,6 @@ func parseSize(s string) (size int64, err error) {
 
 
 func init() {
-	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(cmdImg)
 	rootCmd.AddCommand(cmdCtn)
 	rootCmd.AddCommand(cmdSvc)
